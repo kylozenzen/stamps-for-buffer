@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Receipts — Client approvals for Buffer</title>
+  <meta name="description" content="Pull posts from Buffer, send one clean approval room, stamp final sign-off, and keep the receipt.">
+  <meta name="theme-color" content="#0d0f0c">
+  <meta property="og:title" content="Receipts — Client approvals for Buffer">
+  <meta property="og:description" content="Your content lives in Buffer. Your client approvals live in Receipts.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Space+Grotesk:wght@500;600;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/landing.css">
+</head>
+<body>
+  <header class="site-nav">
+    <a class="brand" href="#top" aria-label="Receipts home">
+      <span class="brand-mark"><span class="material-symbols-outlined fill">receipt_long</span></span>
+      <span><strong>Receipts</strong><small>for Buffer users</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#how">How it works</a>
+      <a href="#proof">The receipt</a>
+      <a href="#beta">Beta</a>
+    </nav>
+    <a class="nav-cta" href="/app">Open the beta</a>
+  </header>
+
+  <main id="top">
+    <section class="hero page-pad">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> The approval layer for Buffer</p>
+        <h1>Get the “looks good” <em>before</em> it goes live.</h1>
+        <p class="hero-sub">Pull drafts from Buffer. Assign a client. Share one no-login approval room. Let the team comment—and let the owner stamp final approval.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/app">Open the beta</a>
+          <a class="button secondary" href="#how">See the workflow</a>
+        </div>
+        <div class="proof-strip">
+          <div><b>Buffer</b><span>stays the content source</span></div>
+          <div><b>1 room</b><span>for client review</span></div>
+          <div><b>1 receipt</b><span>for the approved version</span></div>
+        </div>
+      </div>
+
+      <div class="hero-stage" aria-label="Receipts approval workflow preview">
+        <div class="app-window">
+          <div class="window-bar"><i></i><i></i><i></i><b>Receipts approval room</b></div>
+          <div class="preview-shell">
+            <aside>
+              <div class="mini-brand"><span>✓</span><b>Receipts</b></div>
+              <div class="mini-nav active">Board</div>
+              <div class="mini-nav">Clients</div>
+              <div class="mini-nav">Receipts</div>
+              <div class="buffer-chip"><span></span>Buffer connected</div>
+            </aside>
+            <div class="preview-main">
+              <div class="preview-head"><div><small>CLIENT CONTENT</small><h2>6 posts</h2></div><button>Sync Buffer</button></div>
+              <div class="preview-columns">
+                <section><label>From Buffer</label><article><div class="media slate"></div><b>Unassigned draft</b><small>Choose a client</small></article></section>
+                <section><label>Waiting</label><article><div class="media cyan"></div><b>Behind the bar reel</b><small>Owner code required</small></article></section>
+                <section><label>Changes</label><article class="red"><div class="media coral"></div><b>Weekend hours</b><small>Fix closing time</small></article></section>
+                <section><label>Approved</label><article class="green"><div class="media lime"></div><b>Fall tap list</b><small>Receipt #RCP-84N2K7</small></article></section>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="owner-card"><small>OWNER CODE</small><b>482193</b><span>Only the code holder can stamp approval.</span></div>
+        <div class="receipt-card"><span class="material-symbols-outlined fill">verified</span><div><b>Approval stamped</b><small>Receipt saved to the paper trail</small></div></div>
+      </div>
+    </section>
+
+    <section class="statement page-pad">
+      <p class="eyebrow centered"><span></span> Built for the messy middle</p>
+      <h2>Your content already lives in Buffer. Receipts handles the part Buffer should not have to.</h2>
+      <p>Client comments, change requests, final-owner sign-off, and a permanent record of the exact version that was approved.</p>
+    </section>
+
+    <section id="how" class="workflow page-pad">
+      <div class="section-heading">
+        <p class="eyebrow"><span></span> Four steps. No CRM swamp.</p>
+        <h2>From Buffer draft to documented approval.</h2>
+      </div>
+      <div class="steps">
+        <article><span>01</span><h3>Sync Buffer</h3><p>Pull draft, needs-approval, and scheduled posts into one focused board.</p></article>
+        <article><span>02</span><h3>Assign a client</h3><p>Drop each post into the client’s ongoing approval room.</p></article>
+        <article><span>03</span><h3>Share the room</h3><p>The team can comment or request changes without creating an account.</p></article>
+        <article><span>04</span><h3>Stamp it</h3><p>The owner enters a private code. Receipts locks the snapshot and records the approval.</p></article>
+      </div>
+    </section>
+
+    <section class="split-feature page-pad">
+      <div>
+        <p class="eyebrow"><span></span> Team feedback. Owner decision.</p>
+        <h2>Everyone can weigh in. One person can say “ship it.”</h2>
+        <p>Each client has a stable room link and a separate six-digit owner code. Comments stay collaborative; final approval stays intentional.</p>
+        <ul>
+          <li>No client login</li>
+          <li>One room per client</li>
+          <li>Code rotation and link revocation</li>
+          <li>Buffer-change detection before approval</li>
+        </ul>
+      </div>
+      <div class="room-demo">
+        <div class="room-top"><span>BB</span><div><b>Barrio Brew Co.</b><small>Approval room</small></div><em>3 active</em></div>
+        <div class="room-progress"><i></i></div>
+        <div class="room-post"><div class="fake-thumb"></div><div><small>INSTAGRAM REEL</small><b>Behind the bar</b><p>“Visual looks great. Can we tighten line two?”</p></div></div>
+        <div class="room-actions"><button>Request changes</button><button class="approve">Stamp approval</button></div>
+      </div>
+    </section>
+
+    <section id="proof" class="receipt-section page-pad">
+      <div class="receipt-copy">
+        <p class="eyebrow"><span></span> The paper trail</p>
+        <h2>An approval should survive longer than the Slack thread.</h2>
+        <p>Receipts records the approved caption, Buffer source, platform, version, approver, timestamp, and fingerprint. If the Buffer post changes, the old approval stays attached to the old snapshot—not the edit.</p>
+      </div>
+      <article class="paper-receipt">
+        <header><span class="brand-mark small"><span class="material-symbols-outlined fill">receipt_long</span></span><div><b>RECEIPTS</b><small>CLIENT APPROVAL RECORD</small></div></header>
+        <div class="tear"></div>
+        <dl>
+          <div><dt>Receipt</dt><dd>RCP-84N2K7</dd></div>
+          <div><dt>Client</dt><dd>Barrio Brew Co.</dd></div>
+          <div><dt>Approved by</dt><dd>Marisol Vega</dd></div>
+          <div><dt>Source</dt><dd>Buffer · Instagram</dd></div>
+          <div><dt>Version</dt><dd>Snapshot 3</dd></div>
+          <div><dt>Decision</dt><dd class="approved">APPROVED</dd></div>
+        </dl>
+        <code>7cb61e9b2f...a80d</code>
+      </article>
+    </section>
+
+    <section id="beta" class="beta page-pad">
+      <div>
+        <p class="eyebrow"><span></span> Private beta build</p>
+        <h2>The narrow version is the useful version.</h2>
+        <p>Receipts V1 does approvals only. Buffer owns the post. Receipts owns the decision and the proof.</p>
+      </div>
+      <a class="button primary" href="/app">Launch Receipts</a>
+    </section>
+  </main>
+
+  <footer><div class="brand"><span class="brand-mark"><span class="material-symbols-outlined fill">receipt_long</span></span><span><strong>Receipts</strong><small>Pull it. Review it. Stamp it. Keep the receipt.</small></span></div><p>Independent companion app for Buffer users. Not affiliated with Buffer.</p></footer>
+</body>
+</html>

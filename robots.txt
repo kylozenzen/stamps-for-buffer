@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /app
+Disallow: /review/
+Disallow: /r/
+Disallow: /.netlify/functions/
