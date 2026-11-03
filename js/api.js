@@ -3,7 +3,7 @@
   var U=window.ReceiptsUtil;
   var config={backendConfigured:false,appBaseUrl:window.location.origin};
   var session=null;
-  var mode='demo';
+  var mode='production';
   var DEMO_KEY='receipts_buffer_beta_demo_v1';
 
   function clone(v){return JSON.parse(JSON.stringify(v));}
@@ -18,16 +18,19 @@
   function demoFingerprint(post){var src=[post.bufferId,post.caption,post.platform,post.image,post.version].join('|');var h=2166136261;for(var i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(16).padStart(8,'0')+Math.random().toString(16).slice(2,14);}
 
   async function init(){
-    try{
-      var res=await fetch('/.netlify/functions/config',{cache:'no-store'});
-      if(res.ok){config=await res.json();}
-    }catch(e){}
-    mode=config.backendConfigured?'remote':'demo';
-    return {config:config,mode:mode};
+    if(new URLSearchParams(window.location.search).get('demo')==='1'){
+      mode='demo';config={mode:'demo',backendConfigured:false,appBaseUrl:window.location.origin};
+      return {config:config,mode:mode};
+    }
+    var res=await fetch('/.netlify/functions/config',{cache:'no-store',credentials:'same-origin'});
+    if(!res.ok)throw new Error('Receipts configuration is unavailable. Production never falls back to demo.');
+    config=await res.json();
+    if(config.mode!=='production')throw new Error('Invalid Receipts configuration.');
+    mode='remote';return {config:config,mode:mode};
   }
   function setSession(value){session=value||null;}
-  function headers(extra){var h={'content-type':'application/json'};if(session&&session.access_token)h.authorization='Bearer '+session.access_token;Object.keys(extra||{}).forEach(function(k){h[k]=extra[k];});return h;}
-  async function request(url,body,extra){var res=await fetch(url,{method:'POST',headers:headers(extra),body:JSON.stringify(body||{})});var data={};try{data=await res.json();}catch(e){}if(!res.ok)throw new Error(data.error||'Request failed ('+res.status+')');return data;}
+  function headers(extra){var h={'content-type':'application/json'};Object.keys(extra||{}).forEach(function(k){h[k]=extra[k];});return h;}
+  async function request(url,body,extra){var res=await fetch(url,{credentials:'same-origin',method:'POST',headers:headers(extra),body:JSON.stringify(body||{})});var data={};try{data=await res.json();}catch(e){}if(!res.ok){var error=new Error(data.error||'Request failed ('+res.status+')');error.status=res.status;throw error;}return data;}
   function creator(action,payload,extra){return request('/.netlify/functions/creator-api',{action:action,payload:payload||{}},extra);}
   function review(action,token,payload){return request('/.netlify/functions/review-api',{action:action,token:token,payload:payload||{}});}
 
@@ -53,7 +56,7 @@
     var data=loadDemo(),p=postFor(data,postId);if(!p)throw new Error('Post not found');p.comments=p.comments||[];p.comments.push({authorType:'creator',authorName:'You',body:body,kind:'comment',createdAt:new Date().toISOString()});saveDemo(data);return {data:clone(data)};
   }
   async function syncBuffer(token){
-    if(mode==='remote')return creator('syncBuffer',{},token?{'x-buffer-token':token}:{});
+    if(mode==='remote')return creator('syncBuffer',{tags:token||[]});
     var data=loadDemo();data.lastSync=new Date().toISOString();var unassigned=data.posts.find(function(p){return p.bufferId==='buf_demo_new';});if(!unassigned){data.posts.unshift({id:U.id('post'),bufferId:'buf_demo_new',clientId:null,title:'Fresh Buffer draft',caption:'A newly synced Buffer draft appears here, ready to assign to a client.',image:'',platform:'LinkedIn',service:'linkedin',status:'draft',bufferStatus:'draft',version:1,changedSinceReview:false,createdAt:new Date().toISOString(),comments:[]});}saveDemo(data);await new Promise(function(r){setTimeout(r,450);});return {data:clone(data),added:unassigned?0:1,updated:data.posts.length};
   }
   async function inviteClient(clientId){
@@ -69,7 +72,15 @@
     var data=loadDemo(),c=(data.clients||[]).find(function(x){return x.roomToken===token;});if(!c)throw new Error('This approval room was not found.');var posts=(data.posts||[]).filter(function(p){return p.clientId===c.id&&p.status!=='draft';});return {client:clone(c),posts:clone(posts),demo:true};
   }
   async function addReviewComment(token,postId,name,body){
-    if(mode==='remote')return review('addComment',token,{postId:postId,name:name,body:body});
+    if(mode==='remote'){
+      var storageKey='receipts_feedback_'+token+'_'+postId;
+      var previous=null;try{previous=JSON.parse(localStorage.getItem(storageKey)||'null');}catch(e){}
+      var pending=previous&&previous.name===name&&previous.body===body?previous:{id:crypto.randomUUID(),name:name,body:body};
+      try{localStorage.setItem(storageKey,JSON.stringify(pending));}catch(e){throw new Error('Browser storage is required to safely retry feedback.');}
+      var result=await review('addComment',token,{postId:postId,name:name,body:body,idempotencyKey:pending.id});
+      if(result.status!=='delivered')throw new Error('Feedback delivery is '+result.status+'. It has not been confirmed in Buffer. Retry this same submission to check status; do not submit a new copy. Reference: '+(result.deliveryId||pending.id));
+      localStorage.removeItem(storageKey);return result;
+    }
     var data=loadDemo(),c=(data.clients||[]).find(function(x){return x.roomToken===token;}),p=postFor(data,postId);if(!c||!p||p.clientId!==c.id)throw new Error('Post not found');p.comments=p.comments||[];p.comments.push({authorType:'client',authorName:name||'Client',body:body,kind:'comment',createdAt:new Date().toISOString()});saveDemo(data);return {ok:true};
   }
   async function requestChanges(token,postId,name,body){
@@ -83,8 +94,8 @@
   async function reset(){if(mode==='remote')throw new Error('Reset is only available in demo mode.');return resetDemo();}
   function getMode(){return mode;}
   function getConfig(){return config;}
-  function getBufferToken(){try{return localStorage.getItem('receipts_buffer_token')||'';}catch(e){return '';}}
-  function saveBufferToken(token){try{if(token)localStorage.setItem('receipts_buffer_token',token);else localStorage.removeItem('receipts_buffer_token');}catch(e){}}
+  function getBufferToken(){if(mode!=='demo')return '';try{return localStorage.getItem('receipts_buffer_token')||'';}catch(e){return '';}}
+  function saveBufferToken(token){if(mode!=='demo')throw new Error('Production tokens are managed server-side.');try{if(token)localStorage.setItem('receipts_buffer_token',token);else localStorage.removeItem('receipts_buffer_token');}catch(e){}}
 
-  window.ReceiptsAPI={init:init,setSession:setSession,bootstrap:bootstrap,createClient:createClient,rotateClient:rotateClient,assignPost:assignPost,sendForReview:sendForReview,addCreatorComment:addCreatorComment,syncBuffer:syncBuffer,inviteClient:inviteClient,getPostDetail:getPostDetail,getReviewRoom:getReviewRoom,addReviewComment:addReviewComment,requestChanges:requestChanges,approvePost:approvePost,reset:reset,getMode:getMode,getConfig:getConfig,getBufferToken:getBufferToken,saveBufferToken:saveBufferToken};
+  window.ReceiptsAPI={inspectFeedback:function(id){return creator('inspectFeedback',{deliveryId:id});},confirmFeedback:function(id,noteId){return creator('confirmFeedback',{deliveryId:id,noteId:noteId});},selectOrganization:function(id){return creator('selectOrganization',{organizationId:id});},disconnect:function(){return creator('disconnect');},init:init,setSession:setSession,bootstrap:bootstrap,createClient:createClient,rotateClient:rotateClient,assignPost:assignPost,sendForReview:sendForReview,addCreatorComment:addCreatorComment,syncBuffer:syncBuffer,inviteClient:inviteClient,getPostDetail:getPostDetail,getReviewRoom:getReviewRoom,addReviewComment:addReviewComment,requestChanges:requestChanges,approvePost:approvePost,reset:reset,getMode:getMode,getConfig:getConfig,getBufferToken:getBufferToken,saveBufferToken:saveBufferToken};
 })();

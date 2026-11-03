@@ -1,0 +1,12 @@
+# Read-only. Standard introspection cannot select a root field by name.
+# Filter returned fields to account, channels, posts, post, collaborationNotes,
+# and createCollaborationNote. Type names are discovered, never guessed.
+query ReceiptsOperationSignatures {
+  __schema {
+    queryType { name fields { name description args { name defaultValue type { ...Ref } } type { ...Ref } } }
+    mutationType { name fields { name description args { name defaultValue type { ...Ref } } type { ...Ref } } }
+  }
+}
+fragment Ref on __Type {
+  kind name ofType { kind name ofType { kind name ofType { kind name ofType { kind name } } } }
+}

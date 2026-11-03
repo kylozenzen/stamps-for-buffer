@@ -1,6 +1,10 @@
 [build]
-  publish = "."
+  publish = "dist"
+  command = "npm run build"
   functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "24"
 
 [functions]
   node_bundler = "esbuild"
@@ -25,10 +29,27 @@
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+    Referrer-Policy = "no-referrer"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
   for = "/app.html"
   [headers.values]
     Cache-Control = "no-store"
+
+[[headers]]
+  for = "/review/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/app"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/r/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"

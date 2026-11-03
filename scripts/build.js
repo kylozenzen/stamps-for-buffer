@@ -1,0 +1,11 @@
+import { mkdir, copyFile, rm } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+const root = fileURLToPath(new URL('../', import.meta.url));
+await rm(`${root}/dist`, { recursive: true, force: true });
+await mkdir(`${root}/dist`);
+for (const file of ['index.html', 'app.html', 'thanks.html', 'robots.txt']) await copyFile(`${root}/${file}`, `${root}/dist/${file}`);
+await mkdir(`${root}/dist/js`);
+for (const file of ['demo-data.js','utils.js','api.js','auth.js','ui.js','app.js']) await copyFile(`${root}/js/${file}`, `${root}/dist/js/${file}`);
+await mkdir(`${root}/dist/styles`);
+for (const file of ['landing.css','app.css']) await copyFile(`${root}/styles/${file}`, `${root}/dist/styles/${file}`);
+console.log('Built static site into dist; legacy code and server files excluded.');

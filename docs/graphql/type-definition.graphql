@@ -1,0 +1,13 @@
+# Read-only. Run once per named input/result/enum/union type found in signatures.
+query ReceiptsTypeDefinition($name: String!) {
+  __type(name: $name) {
+    kind name description
+    inputFields { name description defaultValue type { ...Ref } }
+    fields { name description args { name defaultValue type { ...Ref } } type { ...Ref } }
+    enumValues { name description }
+    possibleTypes { kind name }
+  }
+}
+fragment Ref on __Type {
+  kind name ofType { kind name ofType { kind name ofType { kind name ofType { kind name } } } }
+}
