@@ -1,0 +1,19 @@
+{
+  "name": "receipts-for-buffer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --use-env-proxy --env-file-if-exists=.env scripts/dev-server.js",
+    "test": "node --test --test-isolation=none test/*.test.js",
+    "check": "node scripts/check.js",
+    "build": "node scripts/build.js",
+    "buffer:schema": "node --use-env-proxy --env-file-if-exists=.env scripts/buffer-schema.js"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.15"
+  }
+}

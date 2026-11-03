@@ -1,0 +1,61 @@
+FIRST NETLIFY LIVE ACCEPTANCE — TEXT ONLY
+Status: prepared, NOT RUN. Use the stable HTTPS test-site hostname after an explicitly authorized deployment.
+Scope: plain-text drafts and named Buffer Notes. Media review and media-only change detection are incomplete.
+Receipts approvals do not block or prevent Buffer from publishing. Keep the test Post in draft in Buffer.
+
+1. Functions and routes
+   Open / and /app directly. Open /.netlify/functions/config and confirm HTTP 200 and production mode.
+   Confirm /.env, /server/service.js and /supabase/migrations/001_receipts.sql are not publicly served.
+   The presence flags in config are not proof that the keys or database are valid.
+   Check config/review API responses use Cache-Control: no-store. Check the hosted review page also honors its configured no-store and no-referrer headers; local Netlify static emulation could not prove hosted HTML caching.
+
+2. Connect
+   From /app choose Connect Buffer. Consent to all five required scopes.
+   Return through /.netlify/functions/oauth-callback to /app on the same hostname.
+   Confirm the correct creator identity and selected organization. Reconnect an older grant if prompted.
+   Do not record authorization codes, tokens, session cookies, service-role keys or encryption keys in the test report.
+
+3. Sync twice without duplicates
+   In Buffer create or choose one harmless Post draft, with a distinctive text caption.
+   Optionally select a known tag ID. Sync Buffer twice with the same filter.
+   Expect exactly one dashboard item per original Buffer source ID, the same local ID and version for an unchanged draft.
+   Confirm it appears under Unassigned when no client is assigned. No scheduled/published Post should be imported as a draft.
+
+4. Assign
+   Create a client room using test contact details. Assign the draft to that client.
+   Copy the room URL. Before sharing, open it in a different browser profile: the room has no active Posts.
+
+5. Share
+   Back in the creator dashboard open the Post and choose Send latest snapshot.
+   Directly navigate to the full /review/TOKEN URL in the separate browser, not through creator navigation.
+   Expect HTTP 200 for the app/assets, the correct client name and exact reviewed plain-text caption, without reviewer login.
+   Do not use ?demo=1. Confirm production approval stamps are unavailable.
+
+6. Comment
+   In the separate browser enter a reviewer name and a distinctive comment. Send once.
+   Expect a confirmed delivery status; if it is uncertain, stop and follow the recovery instructions rather than posting another copy.
+   Verify Buffer shows the note on that exact Post thread with readable external reviewer attribution and the server submission marker.
+
+7. Confirm the Buffer note ID
+   Using browser developer tools, inspect the successful review-api addComment JSON response and note its noteId only.
+   In Supabase's protected dashboard confirm the matching feedback_deliveries.buffer_note_id and room_note_visibility.buffer_note_id.
+   Match that ID to the Buffer collaborationNotes result on the same Post if the Buffer UI does not show IDs; use a server-side authorized read without exposing its token.
+   Expect one delivery row and one visible note ID for the submission. Do not paste full network traces/cookies into reports.
+
+8. Refresh both views
+   Refresh the public room. Expect the comment loaded from Buffer with that same note ID.
+   Refresh the creator dashboard, reopen the Post detail, and expect the same delivered comment in its conversation.
+   Add an internal team-only note in Buffer and refresh both views. It must NOT appear externally merely because it exists in the thread or has identical comment text.
+   If a Buffer read fails, expect an explicit unavailable notice; no cached/internal note should be substituted.
+
+9. Revoke the room link
+   In creator Clients choose Rotate link. Save the newly generated URL separately.
+   Refresh the old URL in the separate browser. Expect room-not-found/access rejection.
+   From the previously open old page, attempt another comment: expect rejection and no new Buffer note.
+   Open the new URL: the intended shared Post remains accessible without reviewer login.
+   Previously rendered text cannot be erased from a browser's memory by rotation; the requirement is that every new read/write fails with the revoked token.
+
+10. Record outcome without secrets
+    Record site origin, test time, pass/fail per step, safe source/note IDs, and any generic error/status codes.
+    Distinguish a real confirmed note from uncertain delivery and mocked test results.
+    Do not mark acceptance complete if callback, database access, note delivery, refresh or revocation failed.
